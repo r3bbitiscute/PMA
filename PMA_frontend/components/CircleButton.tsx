@@ -2,11 +2,11 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../theme/GlobalStyle";
 
-type Props = {
+interface Props {
   buttonSize: number;
   icon: keyof typeof MaterialIcons.glyphMap;
   OnPress: () => void;
-};
+}
 
 export default function CircleButton({ buttonSize, icon, OnPress }: Props) {
   return (

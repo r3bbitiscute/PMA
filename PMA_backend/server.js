@@ -25,6 +25,10 @@ mongoose
 
 /* API endpoints */
 
+const collections = {
+  pages: Page,
+};
+
 // Get all pages
 app.get("/getAllPages", async (req, res) => {
   try {
@@ -48,10 +52,7 @@ app.get("/getFormConfig/:formName", async (req, res) => {
   }
 });
 
-const collections = {
-  pages: Page,
-};
-
+// Submit Data to mongoDB server
 app.post("/submitData/:collection", async (req, res) => {
   const collection = req.params.collection;
   const data = req.body;

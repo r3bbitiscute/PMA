@@ -1,12 +1,10 @@
 import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "../theme/GlobalStyle";
 
-type Props = {
+interface Props {
   pageName: String;
   OnPress: () => void;
-};
-
-
+}
 
 export default function PageButton({ pageName, OnPress }: Props) {
   return (
@@ -21,6 +19,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent,
     borderRadius: 5,
     padding: 20,
+    marginBottom: 10,
   },
 
   label: {
