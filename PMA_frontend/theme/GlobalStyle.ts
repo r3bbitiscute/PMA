@@ -8,4 +8,5 @@ export const Colors = {
 export const BackgroundStyle = {
   flex: 1,
   backgroundColor: Colors.background,
+  padding: 10,
 };
