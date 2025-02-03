@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { View, ScrollView, StyleSheet, Dimensions, Alert } from "react-native";
 import {
   useLocalSearchParams,
@@ -13,17 +13,26 @@ import CircleButton from "../components/CircleButton";
 import { Colors } from "../theme/GlobalStyle";
 import { Test } from "../testVariable";
 
+interface ListType {
+  name: string;
+  page: string;
+}
+
 export default function PageTemplate() {
   const { pageName } = useLocalSearchParams();
   const navigation = useNavigation();
+
+  const [lists, setLists] = useState<ListType[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({ title: `${pageName}` });
 
       axios
-        .get(`http://${Test.ipConfig}:8080/getPageContent`)
-        .then()
+        .get(`http://${Test.ipConfig}:8080/getPageContent/${pageName}`)
+        .then((response) => {
+          setLists(response.data);
+        })
         .catch((error) => {
           Alert.alert("Error@PageTemplate.tsx.useFocusEffect:", error);
           console.log("Error@PageTemplate.tsx.useFocusEffect:", error);
@@ -44,7 +53,14 @@ export default function PageTemplate() {
           snapToInterval={screenWidth}
           decelerationRate="fast"
         >
-          {}
+          {lists.map((list, index) => (
+            <List
+              key={index}
+              title={list.name}
+              page={pageName as string}
+              screenWidth={screenWidth}
+            />
+          ))}
         </ScrollView>
       </View>
       <View style={styles.buttonContainer}>

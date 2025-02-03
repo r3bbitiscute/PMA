@@ -39,7 +39,10 @@ app.get("/getAllPages", async (req, res) => {
 
 app.get("/getPageContent/:page", async (req, res) => {
   const pageName = req.params.page;
+
   try {
+    const data = await List.find({ page: pageName });
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).send(`Error@server.js.getCards: ${error}`);
     console.log("Error@server.js.getCards: ", error);

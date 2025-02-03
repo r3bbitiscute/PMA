@@ -2,7 +2,6 @@ import { View, TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
 import { Colors } from "../theme/GlobalStyle";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import axios from "axios";
 
 import { Test } from "../testVariable";
 
