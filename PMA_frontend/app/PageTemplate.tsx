@@ -1,12 +1,65 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { useCallback } from "react";
+import { View, ScrollView, StyleSheet, Dimensions, Alert } from "react-native";
+import {
+  useLocalSearchParams,
+  useNavigation,
+  router,
+  useFocusEffect,
+} from "expo-router";
+import axios from "axios";
+
 import List from "../components/List";
+import CircleButton from "../components/CircleButton";
 import { Colors } from "../theme/GlobalStyle";
+import { Test } from "../testVariable";
 
 export default function PageTemplate() {
+  const { pageName } = useLocalSearchParams();
+  const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({ title: `${pageName}` });
+
+      axios
+        .get(`http://${Test.ipConfig}:8080/getPageContent`)
+        .then()
+        .catch((error) => {
+          Alert.alert("Error@PageTemplate.tsx.useFocusEffect:", error);
+          console.log("Error@PageTemplate.tsx.useFocusEffect:", error);
+        });
+    }, [])
+  );
+
+  const screenWidth = Dimensions.get("window").width;
+
   return (
-    <ScrollView style={styles.background} horizontal={true}>
-      <List title="Something"></List>
-    </ScrollView>
+    <View style={styles.background}>
+      <View style={styles.listContainer}>
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          pagingEnabled={true}
+          snapToAlignment="start"
+          snapToInterval={screenWidth}
+          decelerationRate="fast"
+        >
+          {}
+        </ScrollView>
+      </View>
+      <View style={styles.buttonContainer}>
+        <CircleButton
+          buttonSize={55}
+          icon="add"
+          OnPress={() =>
+            router.push({
+              pathname: "/CreateList",
+              params: { pageName: pageName },
+            })
+          }
+        />
+      </View>
+    </View>
   );
 }
 
@@ -14,5 +67,16 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+
+  listContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+
+  buttonContainer: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
   },
 });

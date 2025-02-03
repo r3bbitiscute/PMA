@@ -6,46 +6,62 @@ import {
   Alert,
   View,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 import { Colors } from "../theme/GlobalStyle";
 import { Test } from "../testVariable";
+import { useFocusEffect } from "expo-router";
 
 interface FieldConfig {
-  [key: string]: { type: string | number | boolean };
+  [key: string]: { type: string | number | boolean | Date };
 }
 
 interface DataConfig {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | Date;
 }
 
 interface Props {
   collection: string;
+  pageName?: string;
 }
 
-export default function Form({ collection }: Props) {
+export default function Form({ collection, pageName }: Props) {
   const [schema, setSchema] = useState<FieldConfig>({});
   const [formData, setFormData] = useState<DataConfig>({});
+  const [datePickerFlag, setDatePickerFlag] = useState(false);
 
-  useEffect(() => {
-    axios
-      .get(`http://${Test.ipConfig}:8080/getFormConfig/${collection}`)
-      .then((response) => {
-        setSchema(response.data);
-      })
-      .catch((error) => {
-        Alert.alert(error);
-      });
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      axios
+        .get(`http://${Test.ipConfig}:8080/getFormConfig/${collection}`)
+        .then((response) => {
+          setSchema(response.data);
+        })
+        .catch((error) => {
+          Alert.alert("Error@Form.tsx.useFocusEffect:", error);
+          console.log("Error@Form.tsx.useFocusEffect:", error);
+        });
 
-  const handleInputChange = (
+      if (pageName) {
+        setFormData((prevData) => ({ ...prevData, page: pageName }));
+      }
+    }, [])
+  );
+
+  const ToggleDatePicker = () => {
+    setDatePickerFlag((prevFlag) => !prevFlag);
+  };
+
+  const HandleInputChange = (
     field: string,
-    value: string | number | boolean
+    value: string | number | boolean | Date
   ) => {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
-  const handleSubmit = () => {
+  const HandleSubmit = () => {
     axios
       .post(`http://${Test.ipConfig}:8080/submitData/${collection}`, formData)
       .then((response) => {
@@ -59,19 +75,43 @@ export default function Form({ collection }: Props) {
 
   return (
     <View style={styles.formContainer}>
-      {Object.keys(schema).map((field) => {
-        if (schema[field].type === "String") {
-          return (
-            <TextInput
-              key={field}
-              placeholder={`Enter ${field}`}
-              style={styles.textField}
-              onChangeText={(text) => handleInputChange(field, text)}
-            />
-          );
-        }
-      })}
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+      <View style={styles.inputFieldContainer}>
+        {Object.keys(schema).map((field) => {
+          if (schema[field].type === "String") {
+            return (
+              <TextInput
+                key={field}
+                placeholder={`Enter ${field}`}
+                style={styles.textField}
+                onChangeText={(text) => HandleInputChange(field, text)}
+              />
+            );
+          } else if (schema[field].type === "Date") {
+            return (
+              <View key={field} style={styles.button}>
+                <TouchableOpacity onPress={ToggleDatePicker}>
+                  <Text>Select Date</Text>
+                </TouchableOpacity>
+                {datePickerFlag && (
+                  <DateTimePicker
+                    value={new Date()}
+                    mode="date"
+                    display="spinner"
+                    onChange={(event, selectedDate) => {
+                      setDatePickerFlag(false);
+                      if (selectedDate) {
+                        HandleInputChange(field, selectedDate.toISOString());
+                      }
+                    }}
+                  />
+                )}
+              </View>
+            );
+          }
+        })}
+      </View>
+
+      <TouchableOpacity style={styles.submitButton} onPress={HandleSubmit}>
         <Text style={styles.submitButtonLabel}>Submit</Text>
       </TouchableOpacity>
     </View>
@@ -86,11 +126,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  inputFieldContainer: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+  },
+
   textField: {
     width: "100%",
     backgroundColor: Colors.textPrimary,
     borderRadius: 5,
     marginBottom: 10,
+    padding: 10,
+  },
+
+  button: {
+    height: 40,
+    width: "100%",
+    backgroundColor: Colors.textPrimary,
+    borderRadius: 5,
     padding: 10,
   },
 

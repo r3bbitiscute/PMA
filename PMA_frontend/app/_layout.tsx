@@ -14,6 +14,7 @@ export default function RootLayout() {
         options={{ title: "Home", headerLeft: () => null }}
       />
       <Stack.Screen name="CreatePage" options={{ title: "Create Page" }} />
+      <Stack.Screen name="CreateCard" options={{ title: "Create Card" }} />
     </Stack>
   );
 }

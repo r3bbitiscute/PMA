@@ -1,8 +1,13 @@
 # PMA
+
 PMA (Project Management App) is an APP that helps individuals manage projects efficiently.
 
 ## Features
-- [ ] Create Page
-- [ ] Create List
-- [ ] Create Task
+
+- [x] Create Page
+- [x] Display Page on index
+- [x] Create List
+- [ ] Display List on Page
+- [ ] Create Cards
+- [ ] Display Cards on List
 - [ ] Set Starting and Due date

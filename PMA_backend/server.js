@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import express from "express";
-import { Page } from "./schema.js";
+import { Page, List, Card } from "./schema.js";
 import { formConfig } from "./formConfig.js";
 
 // API listening at port 8080
@@ -24,10 +24,7 @@ mongoose
   });
 
 /* API endpoints */
-
-const collections = {
-  pages: Page,
-};
+/*GET*/
 
 // Get all pages
 app.get("/getAllPages", async (req, res) => {
@@ -40,10 +37,20 @@ app.get("/getAllPages", async (req, res) => {
   }
 });
 
+app.get("/getPageContent/:page", async (req, res) => {
+  const pageName = req.params.page;
+  try {
+  } catch (error) {
+    res.status(500).send(`Error@server.js.getCards: ${error}`);
+    console.log("Error@server.js.getCards: ", error);
+  }
+});
+
 // Get form config schema
 app.get("/getFormConfig/:formName", async (req, res) => {
   const formName = req.params.formName;
   const schema = formConfig[formName];
+
   if (schema) {
     res.status(200).json(schema);
   } else {
@@ -51,6 +58,13 @@ app.get("/getFormConfig/:formName", async (req, res) => {
     console.log("Error@server.js.getFormConfig");
   }
 });
+
+/*POST*/
+const collections = {
+  pages: Page,
+  lists: List,
+  cards: Card,
+};
 
 // Submit Data to mongoDB server
 app.post("/submitData/:collection", async (req, res) => {

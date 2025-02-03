@@ -1,6 +1,6 @@
 import { View, StyleSheet, Alert } from "react-native";
-import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
 import axios from "axios";
 
 import { Test } from "../testVariable";
@@ -17,35 +17,36 @@ export default function index() {
 
   const [pages, setPages] = useState<PageType[]>([]);
 
-  useEffect(() => {
-    SetAllPages();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      SetAllPages();
+    }, [])
+  );
 
   async function SetAllPages() {
     await axios
       .get(`http://${Test.ipConfig}:8080/getAllPages`)
       .then((response) => {
         setPages(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
-        Alert.alert("Error@index.ts.GetAllPages:", error);
-        console.log("Error@index.ts.GetAllPages: ", error);
+        Alert.alert("Error@index.tsx.SetAllPages:", error);
+        console.log("Error@index.tsx.SetAllPages:", error);
       });
   }
 
   return (
     <View style={BackgroundStyle}>
-      <PageButton
-        pageName={"Something"}
-        OnPress={() => router.push(`/PageTemplate`)}
-      />
-
       {pages.map((page, index) => (
         <PageButton
           key={index}
           pageName={page.name}
-          OnPress={() => router.push(`/PageTemplate`)}
+          OnPress={() =>
+            router.push({
+              pathname: `/PageTemplate`,
+              params: { pageName: page.name },
+            })
+          }
         />
       ))}
 

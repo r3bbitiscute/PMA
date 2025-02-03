@@ -1,16 +1,33 @@
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
 import { Colors } from "../theme/GlobalStyle";
-import { useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import axios from "axios";
+
+import { Test } from "../testVariable";
 
 interface Props {
   title: string;
+  page: string;
+  screenWidth: number;
 }
 
-export default function List({ title }: Props) {
+export default function List({ title, page, screenWidth }: Props) {
+  const router = useRouter();
+
+  useEffect(() => {});
+
   return (
-    <View style={styles.background}>
+    <View style={[styles.background, { width: screenWidth }]}>
       <Text style={styles.text}>{title}</Text>
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: `/CreateCard`,
+            params: { page },
+          })
+        }
+      >
         <Text style={styles.text}>+ Add Card</Text>
       </TouchableOpacity>
     </View>
@@ -19,11 +36,7 @@ export default function List({ title }: Props) {
 
 const styles = StyleSheet.create({
   background: {
-    width: 250,
-    maxHeight: "90%",
     backgroundColor: Colors.backgroundSecondary,
-    borderRadius: 5,
-    marginTop: 10,
   },
 
   text: {
