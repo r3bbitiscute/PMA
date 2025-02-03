@@ -8,10 +8,11 @@ import { Test } from "../testVariable";
 interface Props {
   title: string;
   page: string;
+  list: string;
   screenWidth: number;
 }
 
-export default function List({ title, page, screenWidth }: Props) {
+export default function List({ title, page, list, screenWidth }: Props) {
   const router = useRouter();
 
   useEffect(() => {});
@@ -23,7 +24,7 @@ export default function List({ title, page, screenWidth }: Props) {
         onPress={() =>
           router.push({
             pathname: `/CreateCard`,
-            params: { page },
+            params: { pageName: page, listName: list },
           })
         }
       >

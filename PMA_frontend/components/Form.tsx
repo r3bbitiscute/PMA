@@ -25,9 +25,10 @@ interface DataConfig {
 interface Props {
   collection: string;
   pageName?: string;
+  listName?: string;
 }
 
-export default function Form({ collection, pageName }: Props) {
+export default function Form({ collection, pageName, listName }: Props) {
   const [schema, setSchema] = useState<FieldConfig>({});
   const [formData, setFormData] = useState<DataConfig>({});
   const [datePickerFlag, setDatePickerFlag] = useState(false);
@@ -45,7 +46,17 @@ export default function Form({ collection, pageName }: Props) {
         });
 
       if (pageName) {
-        setFormData((prevData) => ({ ...prevData, page: pageName }));
+        setFormData((prevData) => ({
+          ...prevData,
+          page: pageName,
+        }));
+      }
+
+      if (listName) {
+        setFormData((prevData) => ({
+          ...prevData,
+          list: listName,
+        }));
       }
     }, [])
   );
@@ -90,7 +101,11 @@ export default function Form({ collection, pageName }: Props) {
             return (
               <View key={field} style={styles.button}>
                 <TouchableOpacity onPress={ToggleDatePicker}>
-                  <Text>Select Date</Text>
+                  <Text>
+                    {formData[field]
+                      ? new Date(formData[field] as Date).toLocaleDateString()
+                      : "Select Date"}
+                  </Text>
                 </TouchableOpacity>
                 {datePickerFlag && (
                   <DateTimePicker

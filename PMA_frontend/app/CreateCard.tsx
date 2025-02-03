@@ -5,11 +5,15 @@ import { BackgroundStyle } from "../theme/GlobalStyle";
 import Form from "../components/Form";
 
 export default function CreateCard() {
-  const { pageName } = useLocalSearchParams();
+  const { pageName, listName } = useLocalSearchParams();
 
   return (
     <View style={BackgroundStyle}>
-      <Form collection="cards" pageName={pageName as string} />
+      <Form
+        collection="cards"
+        pageName={pageName as string}
+        listName={listName as string}
+      />
     </View>
   );
 }

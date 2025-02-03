@@ -58,6 +58,7 @@ export default function PageTemplate() {
               key={index}
               title={list.name}
               page={pageName as string}
+              list={list.name}
               screenWidth={screenWidth}
             />
           ))}
