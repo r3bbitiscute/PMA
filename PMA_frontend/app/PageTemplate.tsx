@@ -29,7 +29,7 @@ export default function PageTemplate() {
       navigation.setOptions({ title: `${pageName}` });
 
       axios
-        .get(`http://${Test.ipConfig}:8080/getPageContent/${pageName}`)
+        .get(`http://${Test.ipConfig}:8080/getLists/${pageName}`)
         .then((response) => {
           setLists(response.data);
         })
