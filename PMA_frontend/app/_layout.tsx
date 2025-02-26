@@ -3,6 +3,7 @@ import { Colors } from "../theme/GlobalStyle";
 
 export default function RootLayout() {
   return (
+    // Setting Page Header Name
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: Colors.backgroundSecondary },

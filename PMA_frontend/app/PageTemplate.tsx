@@ -18,12 +18,17 @@ interface ListType {
   page: string;
 }
 
+/**
+ * This will be the template for a "Page"
+ * @returns "Page" Template
+ */
 export default function PageTemplate() {
   const { pageName } = useLocalSearchParams();
   const navigation = useNavigation();
 
   const [lists, setLists] = useState<ListType[]>([]);
 
+  // Getting data ("List" & "Card") from MongoDB server
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({ title: `${pageName}` });
@@ -45,6 +50,7 @@ export default function PageTemplate() {
   return (
     <View style={styles.background}>
       <View style={styles.listContainer}>
+        {/* Making sure that all the "List" will be in a horizontal scroll view to allow user to swipe left and right*/}
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -53,6 +59,7 @@ export default function PageTemplate() {
           snapToInterval={screenWidth}
           decelerationRate="fast"
         >
+          {/* // Looping through each "List" retrieved and creating a "List" component for it */}
           {lists.map((list, index) => (
             <List
               key={index}
@@ -65,6 +72,7 @@ export default function PageTemplate() {
         </ScrollView>
       </View>
       <View style={styles.buttonContainer}>
+        {/* Create "List" Button */}
         <CircleButton
           buttonSize={55}
           icon="add"

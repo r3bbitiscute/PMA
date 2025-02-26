@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Page Schema
 const pageSchema = new mongoose.Schema(
   {
     name: String,
@@ -11,6 +12,7 @@ const pageSchema = new mongoose.Schema(
 
 export const Page = mongoose.model("Page", pageSchema);
 
+// List Schema
 const listSchema = new mongoose.Schema(
   { name: String, page: String },
   { collection: "lists" }
@@ -18,6 +20,7 @@ const listSchema = new mongoose.Schema(
 
 export const List = mongoose.model("List", listSchema);
 
+// Card Schema
 const cardSchema = new mongoose.Schema(
   {
     name: String,

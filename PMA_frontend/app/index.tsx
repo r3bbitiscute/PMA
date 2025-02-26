@@ -1,5 +1,5 @@
 import { View, StyleSheet, Alert } from "react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
 import axios from "axios";
 
@@ -12,11 +12,16 @@ interface PageType {
   name: string;
 }
 
+/**
+ * The index page will consist of all "Pages" that have been stored in the MongoDB server.
+ * @returns The index page
+ */
 export default function index() {
   const router = useRouter();
 
   const [pages, setPages] = useState<PageType[]>([]);
 
+  // Getting all "Pages" when index is loaded from MongoDB server
   useFocusEffect(
     useCallback(() => {
       SetAllPages();
@@ -36,6 +41,7 @@ export default function index() {
   }
 
   return (
+    // Looping through each "Pages" retrieved and creating a "Page" button for it
     <View style={BackgroundStyle}>
       {pages.map((page, index) => (
         <PageButton
@@ -50,6 +56,7 @@ export default function index() {
         />
       ))}
 
+      {/* Create "Page" Button*/}
       <View style={styles.buttonContainer}>
         <CircleButton
           buttonSize={55}

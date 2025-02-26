@@ -8,6 +8,14 @@ interface Props {
   OnPress: () => void;
 }
 
+/**
+ * This function is a component that will create a circle button that will have a Material Icons at the center of it
+ *
+ * @param buttonSize The size of the button
+ * @param icon What icon should be at the center of the button
+ * @param OnPress What function should the button performed after button pressed
+ * @returns A Circle button that have a icon from Material Icons at the center of it
+ */
 export default function CircleButton({ buttonSize, icon, OnPress }: Props) {
   return (
     <TouchableOpacity

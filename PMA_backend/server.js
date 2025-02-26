@@ -23,9 +23,11 @@ mongoose
     console.log("Error@server.js; ", error);
   });
 
-/* API endpoints */
-/*GET*/
+/**
+ * API endpoints
+ */
 
+/*GET*/
 // Get all pages
 app.get("/getAllPages", async (req, res) => {
   try {
@@ -96,5 +98,15 @@ app.post("/submitData/:collection", async (req, res) => {
   } catch (error) {
     res.status(500).send(`Error@server.js.getAllPages: ${error}`);
     console.log("Error@server.js.submitData: ", error);
+  }
+});
+
+/*DELETE*/
+app.delete("/deletePage/:page", async (req, res) => {
+  const page = req.params.page;
+  try {
+  } catch (error) {
+    res.status(500).send(`Error@server.js.deletePage: ${error}`);
+    console.log("Error@server.js.deletePage: ", error);
   }
 });

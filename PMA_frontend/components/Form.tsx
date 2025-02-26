@@ -6,7 +6,7 @@ import {
   Alert,
   View,
 } from "react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
