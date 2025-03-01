@@ -12,39 +12,55 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { Colors } from "../theme/GlobalStyle";
 import { Test } from "../testVariable";
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 
+// Interface for form field configuration
 interface FieldConfig {
   [key: string]: { type: string | number | boolean | Date };
 }
 
+// Interface for form data
 interface DataConfig {
   [key: string]: string | number | boolean | Date;
 }
 
+/**
+ * Props for the Form component.
+ * @property {string} collection - The collection name for the form.
+ * @property {string} [pageName] - Optional page name to include in the form data.
+ * @property {string} [listName] - Optional list name to include in the form data.
+ * @property {boolean} [edit] - Optional flag to indicate if the form is in edit mode.
+ */
 interface Props {
   collection: string;
   pageName?: string;
   listName?: string;
+  edit?: boolean;
 }
 
-export default function Form({ collection, pageName, listName }: Props) {
+export default function Form({ collection, pageName, listName, edit }: Props) {
   const [schema, setSchema] = useState<FieldConfig>({});
   const [formData, setFormData] = useState<DataConfig>({});
   const [datePickerFlag, setDatePickerFlag] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-      axios
-        .get(`http://${Test.ipConfig}:8080/getFormConfig/${collection}`)
-        .then((response) => {
-          setSchema(response.data);
-        })
-        .catch((error) => {
-          Alert.alert("Error@Form.tsx.useFocusEffect:", error);
-          console.log("Error@Form.tsx.useFocusEffect:", error);
-        });
+      // Check if user are editing or creating a new data
+      if (edit) {
+      } else {
+        // Fetch form configuration from the server
+        axios
+          .get(`http://${Test.ipConfig}:8080/getFormConfig/${collection}`)
+          .then((response) => {
+            setSchema(response.data);
+          })
+          .catch((error) => {
+            Alert.alert("Error@Form.tsx.useFocusEffect:", error);
+            console.log("Error@Form.tsx.useFocusEffect:", error);
+          });
+      }
 
+      // Add page name to form data if provided
       if (pageName) {
         setFormData((prevData) => ({
           ...prevData,
@@ -52,6 +68,7 @@ export default function Form({ collection, pageName, listName }: Props) {
         }));
       }
 
+      // Add list name to form data if provided
       if (listName) {
         setFormData((prevData) => ({
           ...prevData,
@@ -61,10 +78,12 @@ export default function Form({ collection, pageName, listName }: Props) {
     }, [])
   );
 
+  // Toggle date picker visibility
   const ToggleDatePicker = () => {
     setDatePickerFlag((prevFlag) => !prevFlag);
   };
 
+  // Handle input field changes
   const HandleInputChange = (
     field: string,
     value: string | number | boolean | Date
@@ -72,11 +91,13 @@ export default function Form({ collection, pageName, listName }: Props) {
     setFormData((prevData) => ({ ...prevData, [field]: value }));
   };
 
+  // Submit form data to the server
   const HandleSubmit = () => {
     axios
       .post(`http://${Test.ipConfig}:8080/submitData/${collection}`, formData)
       .then((response) => {
         Alert.alert(response.data);
+        router.back();
       })
       .catch((error) => {
         Alert.alert(error);
@@ -87,6 +108,7 @@ export default function Form({ collection, pageName, listName }: Props) {
   return (
     <View style={styles.formContainer}>
       <View style={styles.inputFieldContainer}>
+        {/* Render input fields based on the form schema */}
         {Object.keys(schema).map((field) => {
           if (schema[field].type === "String") {
             return (
@@ -126,6 +148,7 @@ export default function Form({ collection, pageName, listName }: Props) {
         })}
       </View>
 
+      {/* Submit button */}
       <TouchableOpacity style={styles.submitButton} onPress={HandleSubmit}>
         <Text style={styles.submitButtonLabel}>Submit</Text>
       </TouchableOpacity>

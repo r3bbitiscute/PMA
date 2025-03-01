@@ -3,15 +3,16 @@ import express from "express";
 import { Page, List, Card } from "./schema.js";
 import { formConfig } from "./formConfig.js";
 
-// API listening at port 8080
+// Initialize Express app
 const app = express();
 app.use(express.json());
 
+// Start server on port 8080
 app.listen(8080, () => {
   console.log("Server is running on port 8080");
 });
 
-// Connecting to MongoDB
+// Connect to MongoDB
 mongoose
   .connect(
     "mongodb+srv://r3bbitiscute:R3bbitvelicute!@myapp.k1bkj.mongodb.net/PMA?retryWrites=true&w=majority&appName=myapp"
@@ -39,6 +40,13 @@ app.get("/getAllPages", async (req, res) => {
   }
 });
 
+// Get certain pages data
+app.get("/getPage", async (req, res) => {
+  try {
+  } catch (error) {}
+});
+
+// Get all lists for a specific page
 app.get("/getLists/:page", async (req, res) => {
   const pageName = req.params.page;
 
@@ -51,6 +59,7 @@ app.get("/getLists/:page", async (req, res) => {
   }
 });
 
+// Get all cards for a specific page
 app.get("/getCards/:page", async (req, res) => {
   const pageName = req.params.page;
 
@@ -63,7 +72,7 @@ app.get("/getCards/:page", async (req, res) => {
   }
 });
 
-// Get form config schema
+// Get form configuration schema for a specific form
 app.get("/getFormConfig/:formName", async (req, res) => {
   const formName = req.params.formName;
   const schema = formConfig[formName];
@@ -77,13 +86,14 @@ app.get("/getFormConfig/:formName", async (req, res) => {
 });
 
 /*POST*/
+// Collection mappings
 const collections = {
   pages: Page,
   lists: List,
   cards: Card,
 };
 
-// Submit Data to mongoDB server
+// Submit data to MongoDB
 app.post("/submitData/:collection", async (req, res) => {
   const collection = req.params.collection;
   const data = req.body;
@@ -94,17 +104,28 @@ app.post("/submitData/:collection", async (req, res) => {
     const newEntry = new schema(data);
     await newEntry.save();
 
-    res.status(200).send(`Success`);
+    res.status(200).send(`Successfully Created ${collection}: "${data.name}" `);
   } catch (error) {
-    res.status(500).send(`Error@server.js.getAllPages: ${error}`);
+    res.status(500).send(`Error@server.js.submitData: ${error}`);
     console.log("Error@server.js.submitData: ", error);
   }
 });
 
 /*DELETE*/
+// Delete a specific page
 app.delete("/deletePage/:page", async (req, res) => {
   const page = req.params.page;
   try {
+    // Delete the page
+    await Page.deleteOne({ name: page });
+
+    // Delete all lists associated with the page
+    await List.deleteMany({ page: page });
+
+    // Delete all cards associated with the page
+    await Card.deleteMany({ page: page });
+
+    res.status(200).send(`Successfully Deleted ${page}.`);
   } catch (error) {
     res.status(500).send(`Error@server.js.deletePage: ${error}`);
     console.log("Error@server.js.deletePage: ", error);

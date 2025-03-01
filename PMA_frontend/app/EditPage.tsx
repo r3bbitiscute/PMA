@@ -3,14 +3,10 @@ import { View } from "react-native";
 import { BackgroundStyle } from "../theme/GlobalStyle";
 import Form from "../components/Form";
 
-/**
- * Allow user to create a new "Page"
- * @returns The create "Page" form
- */
-export default function CreatePage() {
+export default function EditPage() {
   return (
     <View style={BackgroundStyle}>
-      <Form collection="pages" />
+      <Form collection="pages" edit={true} />
     </View>
   );
 }

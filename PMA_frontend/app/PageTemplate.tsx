@@ -59,7 +59,7 @@ export default function PageTemplate() {
           snapToInterval={screenWidth}
           decelerationRate="fast"
         >
-          {/* // Looping through each "List" retrieved and creating a "List" component for it */}
+          {/* Looping through each "List" retrieved and creating a "List" component for it */}
           {lists.map((list, index) => (
             <List
               key={index}

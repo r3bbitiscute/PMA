@@ -13,6 +13,7 @@ export default function CreateCard() {
 
   return (
     <View style={BackgroundStyle}>
+      {/* Form component for creating a new card */}
       <Form
         collection="cards"
         pageName={pageName as string}

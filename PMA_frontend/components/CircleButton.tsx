@@ -2,6 +2,12 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../theme/GlobalStyle";
 
+/**
+ * Props for the Circle Button component.
+ * @property {number} buttonSize - The size of the button.
+ * @property {keyof typeof MaterialIcons.glyphMap} icon - The icon to be displayed in the button.
+ * @property {function} OnPress - The function to be called when the button is pressed.
+ */
 interface Props {
   buttonSize: number;
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -9,12 +15,12 @@ interface Props {
 }
 
 /**
- * This function is a component that will create a circle button that will have a Material Icons at the center of it
+ * CircleButton component creates a circular button with a Material Icon at its center.
  *
- * @param buttonSize The size of the button
- * @param icon What icon should be at the center of the button
- * @param OnPress What function should the button performed after button pressed
- * @returns A Circle button that have a icon from Material Icons at the center of it
+ * @param {number} buttonSize - The size of the button.
+ * @param {keyof typeof MaterialIcons.glyphMap} icon - The icon to be displayed in the button.
+ * @param {function} OnPress - The function to be called when the button is pressed.
+ * @returns {JSX.Element} A circular button with a Material Icon at its center.
  */
 export default function CircleButton({ buttonSize, icon, OnPress }: Props) {
   return (

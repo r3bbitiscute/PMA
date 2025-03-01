@@ -53,6 +53,7 @@ export default function index() {
               params: { pageName: page.name },
             })
           }
+          OnDelete={SetAllPages}
         />
       ))}
 
