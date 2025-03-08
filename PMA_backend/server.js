@@ -131,3 +131,21 @@ app.delete("/deletePage/:page", async (req, res) => {
     console.log("Error@server.js.deletePage: ", error);
   }
 });
+
+// Delete a specific card
+app.delete("/deleteCard/:page/:list/:card", async (req, res) => {
+  const { page, list, card } = req.params;
+
+  try {
+    await Card.findOneAndDelete({
+      name: card,
+      page: page,
+      list: list,
+    });
+
+    res.status(200).send(`Successfully Deleted ${card}.`);
+  } catch (error) {
+    res.status(500).send(`Error@server.js.deleteCard: ${error}`);
+    console.log("Error@server.js.deleteCard: ", error);
+  }
+});

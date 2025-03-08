@@ -24,12 +24,12 @@ export default function index() {
   // Getting all "Pages" when index is loaded from MongoDB server
   useFocusEffect(
     useCallback(() => {
-      SetAllPages();
+      SetAllPageButtons();
     }, [])
   );
 
-  async function SetAllPages() {
-    await axios
+  const SetAllPageButtons = () => {
+    axios
       .get(`http://${Test.ipConfig}:8080/getAllPages`)
       .then((response) => {
         setPages(response.data);
@@ -38,7 +38,7 @@ export default function index() {
         Alert.alert("Error@index.tsx.SetAllPages:", error);
         console.log("Error@index.tsx.SetAllPages:", error);
       });
-  }
+  };
 
   return (
     // Looping through each "Pages" retrieved and creating a "Page" button for it
@@ -53,7 +53,7 @@ export default function index() {
               params: { pageName: page.name },
             })
           }
-          OnDelete={SetAllPages}
+          OnDelete={SetAllPageButtons}
         />
       ))}
 

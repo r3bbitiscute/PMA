@@ -27,8 +27,8 @@ export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
     setMenuFlag((menuFlag) => !menuFlag);
   };
 
-  // Delete data from the MongoDB server
-  const DeleteData = () => {
+  // Delete page from the MongoDB server
+  const DeletePage = () => {
     axios
       .delete(`http://${Test.ipConfig}:8080/deletePage/${pageName}`)
       .then((response) => {
@@ -41,7 +41,7 @@ export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
       });
 
     // Closed the menu after deleting the data
-    ToggleMenuFlag;
+    ToggleMenuFlag();
   };
 
   return (
@@ -63,7 +63,7 @@ export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
               <TouchableOpacity onPress={ToggleMenuFlag}>
                 <Text style={styles.menuFont}>Edit</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={DeleteData}>
+              <TouchableOpacity onPress={DeletePage}>
                 <Text style={styles.menuFont}>Delete</Text>
               </TouchableOpacity>
             </View>
