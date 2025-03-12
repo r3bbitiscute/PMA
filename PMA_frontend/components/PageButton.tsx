@@ -51,20 +51,20 @@ export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
         onPress={OnPress}
         onLongPress={ToggleMenuFlag}
       >
-        <Text style={styles.label}>{pageName}</Text>
+        <Text style={styles.defaultFont}>{pageName}</Text>
       </TouchableOpacity>
 
       {/* Overlay Menu */}
       <Modal transparent visible={menuFlag} animationType="fade">
         {/* A Button that covers the entire page to increase user experience (let user exit the Modal) */}
         <TouchableWithoutFeedback onPress={ToggleMenuFlag}>
-          <View style={styles.overlay}>
-            <View style={styles.menu}>
+          <View style={styles.overlayBackground}>
+            <View style={styles.overlayMenu}>
               <TouchableOpacity onPress={ToggleMenuFlag}>
-                <Text style={styles.menuFont}>Edit</Text>
+                <Text style={styles.overlayMenuFont}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={DeletePage}>
-                <Text style={styles.menuFont}>Delete</Text>
+                <Text style={styles.overlayMenuFont}>Delete</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -82,26 +82,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  label: {
+  defaultFont: {
     color: Colors.textPrimary,
     fontSize: 25,
   },
 
-  overlay: {
+  overlayBackground: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
 
-  menu: {
+  overlayMenu: {
     width: 150,
     backgroundColor: Colors.accent,
     borderRadius: 5,
     padding: 10,
   },
 
-  menuFont: {
+  overlayMenuFont: {
     color: Colors.textPrimary,
     fontSize: 15,
     fontWeight: "bold",

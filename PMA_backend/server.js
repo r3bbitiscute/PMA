@@ -132,6 +132,27 @@ app.delete("/deletePage/:page", async (req, res) => {
   }
 });
 
+// Delete a specific list
+app.delete("/deleteList/:page/:list", async (req, res) => {
+  const { page, list } = req.params;
+
+  try {
+    await List.findOneAndDelete({
+      name: list,
+      page: page,
+    });
+
+    await Card.deleteMany({
+      list: list,
+    });
+
+    res.status(200).send(`Successfully Deleted ${list}.`);
+  } catch (error) {
+    res.status(500).send(`Error@server.js.deleteList: ${error}`);
+    console.log("Error@server.js.deleteList: ", error);
+  }
+});
+
 // Delete a specific card
 app.delete("/deleteCard/:page/:list/:card", async (req, res) => {
   const { page, list, card } = req.params;

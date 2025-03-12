@@ -10,6 +10,7 @@ import {
 import axios from "axios";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import { Test } from "../testVariable";
 import { Colors } from "../theme/GlobalStyle";
@@ -19,6 +20,7 @@ interface Props {
   page: string;
   list: string;
   screenWidth: number;
+  SetPageData: () => void;
 }
 
 interface Cards {
@@ -28,7 +30,13 @@ interface Cards {
   list: string;
 }
 
-export default function List({ title, page, list, screenWidth }: Props) {
+export default function List({
+  title,
+  page,
+  list,
+  screenWidth,
+  SetPageData,
+}: Props) {
   const router = useRouter();
 
   const [cards, setCards] = useState<Cards[]>([]);
@@ -39,7 +47,8 @@ export default function List({ title, page, list, screenWidth }: Props) {
     setMenuFlag((menuFlag) => !menuFlag);
   };
 
-  const SetPageData = () => {
+  // Getting "Cards" from MongoDB server
+  const SetListData = () => {
     axios
       .get(`http://${Test.ipConfig}:8080/getCards/${page}`)
       .then((result) => {
@@ -55,16 +64,29 @@ export default function List({ title, page, list, screenWidth }: Props) {
       });
   };
 
-  // Delete card from the MongoDB server
+  // Delete "List" from the MongoDB server
+  const DeleteList = () => {
+    axios
+      .delete(`http://${Test.ipConfig}:8080/deleteList/${page}/${list}`)
+      .then((response) => {
+        Alert.alert(response.data);
+        // Refresh the "Page" data
+        SetPageData();
+      })
+      .catch((error) => {
+        Alert.alert(error);
+        console.error("Error@List.tsx.DeleteList: ", error);
+      });
+  };
+
+  // Delete "Card" from the MongoDB server
   const DeleteCard = (card: string) => {
     axios
       .delete(`http://${Test.ipConfig}:8080/deleteCard/${page}/${list}/${card}`)
       .then((response) => {
         Alert.alert(response.data);
-        {
-          /* Refresh the page data */
-        }
-        SetPageData();
+        // Refresh the "List" data
+        SetListData();
       })
       .catch((error) => {
         Alert.alert(error);
@@ -77,28 +99,48 @@ export default function List({ title, page, list, screenWidth }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      SetPageData();
+      SetListData();
     }, [])
   );
 
   return (
     <View style={[styles.background, { width: screenWidth }]}>
-      <Text style={[styles.text, { fontSize: 22, fontWeight: "bold" }]}>
-        {title}
-      </Text>
+      <View style={styles.listHeader}>
+        <Text
+          style={[
+            styles.defaultFont,
+            { fontSize: 22, fontWeight: "bold", padding: 0 },
+          ]}
+        >
+          {title}
+        </Text>
+        <View style={styles.listHeaderIcons}>
+          <TouchableOpacity>
+            <MaterialIcons
+              name="edit"
+              size={25}
+              color={Colors.textPrimary}
+              style={{ marginRight: 10 }}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={DeleteList}>
+            <MaterialIcons name="delete" size={25} color={Colors.textPrimary} />
+          </TouchableOpacity>
+        </View>
+      </View>
       {cards.map(
         (cards, index) =>
           cards.list == list && (
             <View key={index}>
               <TouchableOpacity onLongPress={ToggleMenuFlag}>
                 <View style={styles.cardsContainer}>
-                  <Text style={[styles.text, { fontWeight: "bold" }]}>
+                  <Text style={[styles.defaultFont, { fontWeight: "bold" }]}>
                     {cards.name}
                   </Text>
                   {
                     // Check if the date is not empty then create a new Text and display it
                     !isNaN(cards.date.getTime()) && (
-                      <Text style={styles.text}>
+                      <Text style={styles.defaultFont}>
                         Due Date:{" "}
                         {cards.date.toLocaleDateString("en-US", {
                           year: "numeric",
@@ -115,13 +157,13 @@ export default function List({ title, page, list, screenWidth }: Props) {
               <Modal transparent visible={menuFlag} animationType="fade">
                 {/* A Button that covers the entire page to increase user experience (let user exit the Modal) */}
                 <TouchableWithoutFeedback onPress={ToggleMenuFlag}>
-                  <View style={styles.overlay}>
-                    <View style={styles.menu}>
+                  <View style={styles.overlayBackground}>
+                    <View style={styles.overlayMenu}>
                       <TouchableOpacity onPress={ToggleMenuFlag}>
-                        <Text style={styles.menuFont}>Edit</Text>
+                        <Text style={styles.overlayMenuFont}>Edit</Text>
                       </TouchableOpacity>
                       <TouchableOpacity onPress={() => DeleteCard(cards.name)}>
-                        <Text style={styles.menuFont}>Delete</Text>
+                        <Text style={styles.overlayMenuFont}>Delete</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -138,7 +180,7 @@ export default function List({ title, page, list, screenWidth }: Props) {
           })
         }
       >
-        <Text style={styles.text}>+ Add Card</Text>
+        <Text style={styles.defaultFont}>+ Add Card</Text>
       </TouchableOpacity>
     </View>
   );
@@ -149,33 +191,43 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundSecondary,
   },
 
+  listHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+  },
+
+  listHeaderIcons: {
+    flexDirection: "row",
+  },
+
   cardsContainer: {
     backgroundColor: Colors.accent,
     borderRadius: 5,
     margin: 10,
   },
 
-  text: {
+  defaultFont: {
     color: Colors.textPrimary,
     fontSize: 15,
     padding: 10,
   },
 
-  overlay: {
+  overlayBackground: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
 
-  menu: {
+  overlayMenu: {
     width: 150,
     backgroundColor: Colors.accent,
     borderRadius: 5,
     padding: 10,
   },
 
-  menuFont: {
+  overlayMenuFont: {
     color: Colors.textPrimary,
     fontSize: 15,
     fontWeight: "bold",

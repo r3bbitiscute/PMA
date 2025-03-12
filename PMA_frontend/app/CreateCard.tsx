@@ -1,4 +1,4 @@
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
 import { BackgroundStyle } from "../theme/GlobalStyle";

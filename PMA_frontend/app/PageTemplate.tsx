@@ -28,20 +28,23 @@ export default function PageTemplate() {
 
   const [lists, setLists] = useState<ListType[]>([]);
 
-  // Getting data ("List" & "Card") from MongoDB server
+  // Getting "List" from MongoDB server
+  const SetPageData = () => {
+    axios
+      .get(`http://${Test.ipConfig}:8080/getLists/${pageName}`)
+      .then((response) => {
+        setLists(response.data);
+      })
+      .catch((error) => {
+        Alert.alert("Error@PageTemplate.tsx.useFocusEffect:", error);
+        console.log("Error@PageTemplate.tsx.useFocusEffect:", error);
+      });
+  };
+
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({ title: `${pageName}` });
-
-      axios
-        .get(`http://${Test.ipConfig}:8080/getLists/${pageName}`)
-        .then((response) => {
-          setLists(response.data);
-        })
-        .catch((error) => {
-          Alert.alert("Error@PageTemplate.tsx.useFocusEffect:", error);
-          console.log("Error@PageTemplate.tsx.useFocusEffect:", error);
-        });
+      SetPageData();
     }, [])
   );
 
@@ -67,6 +70,7 @@ export default function PageTemplate() {
               page={pageName as string}
               list={list.name}
               screenWidth={screenWidth}
+              SetPageData={SetPageData}
             />
           ))}
         </ScrollView>
