@@ -29,7 +29,7 @@ export default function PageTemplate() {
   const [lists, setLists] = useState<ListType[]>([]);
 
   // Getting "List" from MongoDB server
-  const SetPageData = () => {
+  const SettingList = () => {
     axios
       .get(`http://${Test.ipConfig}:8080/getLists/${pageName}`)
       .then((response) => {
@@ -44,7 +44,7 @@ export default function PageTemplate() {
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({ title: `${pageName}` });
-      SetPageData();
+      SettingList();
     }, [])
   );
 
@@ -70,7 +70,7 @@ export default function PageTemplate() {
               page={pageName as string}
               list={list.name}
               screenWidth={screenWidth}
-              SetPageData={SetPageData}
+              RefreshList={SettingList}
             />
           ))}
         </ScrollView>

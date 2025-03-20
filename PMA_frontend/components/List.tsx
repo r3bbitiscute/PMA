@@ -20,7 +20,7 @@ interface Props {
   page: string;
   list: string;
   screenWidth: number;
-  SetPageData: () => void;
+  RefreshList: () => void;
 }
 
 interface Cards {
@@ -35,7 +35,7 @@ export default function List({
   page,
   list,
   screenWidth,
-  SetPageData,
+  RefreshList,
 }: Props) {
   const router = useRouter();
 
@@ -47,8 +47,8 @@ export default function List({
     setMenuFlag((menuFlag) => !menuFlag);
   };
 
-  // Getting "Cards" from MongoDB server
-  const SetListData = () => {
+  // Getting "Cards" from MongoDB server and set the data
+  const SettingCards = () => {
     axios
       .get(`http://${Test.ipConfig}:8080/getCards/${page}`)
       .then((result) => {
@@ -70,8 +70,8 @@ export default function List({
       .delete(`http://${Test.ipConfig}:8080/deleteList/${page}/${list}`)
       .then((response) => {
         Alert.alert(response.data);
-        // Refresh the "Page" data
-        SetPageData();
+        // Refresh the "List" data
+        RefreshList();
       })
       .catch((error) => {
         Alert.alert(error);
@@ -86,7 +86,7 @@ export default function List({
       .then((response) => {
         Alert.alert(response.data);
         // Refresh the "List" data
-        SetListData();
+        SettingCards();
       })
       .catch((error) => {
         Alert.alert(error);
@@ -99,7 +99,7 @@ export default function List({
 
   useFocusEffect(
     useCallback(() => {
-      SetListData();
+      SettingCards();
     }, [])
   );
 

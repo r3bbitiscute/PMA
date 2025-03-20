@@ -9,17 +9,19 @@ import {
 } from "react-native";
 import { useState } from "react";
 import axios from "axios";
+import { useRouter } from "expo-router";
 
 import { Test } from "../testVariable";
 import { Colors } from "../theme/GlobalStyle";
 
 interface Props {
-  pageName: String;
+  pageName: string;
   OnPress: () => void;
   OnDelete: () => void;
 }
 
 export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
+  const router = useRouter();
   const [menuFlag, setMenuFlag] = useState(false);
 
   // Toggle edit and delete menu visibility
@@ -27,7 +29,7 @@ export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
     setMenuFlag((menuFlag) => !menuFlag);
   };
 
-  // Delete page from the MongoDB server
+  // Delete "Page" from the MongoDB server
   const DeletePage = () => {
     axios
       .delete(`http://${Test.ipConfig}:8080/deletePage/${pageName}`)
@@ -60,7 +62,14 @@ export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
         <TouchableWithoutFeedback onPress={ToggleMenuFlag}>
           <View style={styles.overlayBackground}>
             <View style={styles.overlayMenu}>
-              <TouchableOpacity onPress={ToggleMenuFlag}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: `/EditPage`,
+                    params: { pageName: pageName },
+                  })
+                }
+              >
                 <Text style={styles.overlayMenuFont}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={DeletePage}>

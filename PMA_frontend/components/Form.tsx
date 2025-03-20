@@ -45,14 +45,23 @@ export default function Form({ collection, pageName, listName, edit }: Props) {
 
   useFocusEffect(
     useCallback(() => {
+      // Fetch form configuration from the server
+      axios
+        .get(`http://${Test.ipConfig}:8080/getFormConfig/${collection}`)
+        .then((response) => {
+          setSchema(response.data);
+        })
+        .catch((error) => {
+          Alert.alert("Error@Form.tsx.useFocusEffect:", error);
+          console.log("Error@Form.tsx.useFocusEffect:", error);
+        });
+
       // Check if user are editing or creating a new data
-      if (edit) {
-      } else {
-        // Fetch form configuration from the server
+      if (edit && pageName != null) {
         axios
-          .get(`http://${Test.ipConfig}:8080/getFormConfig/${collection}`)
+          .get(`http://${Test.ipConfig}:8080/getPage/${pageName}`)
           .then((response) => {
-            setSchema(response.data);
+            setFormData(response.data);
           })
           .catch((error) => {
             Alert.alert("Error@Form.tsx.useFocusEffect:", error);
@@ -93,16 +102,29 @@ export default function Form({ collection, pageName, listName, edit }: Props) {
 
   // Submit form data to the server
   const HandleSubmit = () => {
-    axios
-      .post(`http://${Test.ipConfig}:8080/submitData/${collection}`, formData)
-      .then((response) => {
-        Alert.alert(response.data);
-        router.back();
-      })
-      .catch((error) => {
-        Alert.alert(error);
-        console.log("error@Form.tsx.handleSubmit: ", error);
-      });
+    if (!edit) {
+      axios
+        .post(`http://${Test.ipConfig}:8080/submitData/${collection}`, formData)
+        .then((response) => {
+          Alert.alert(response.data);
+          router.back();
+        })
+        .catch((error) => {
+          Alert.alert(error);
+          console.log("error@Form.tsx.handleSubmit: ", error);
+        });
+    } else {
+      axios
+        .put(`http://${Test.ipConfig}:8080/editPage/${pageName}`, formData)
+        .then((response) => {
+          Alert.alert(response.data);
+          router.back();
+        })
+        .catch((error) => {
+          Alert.alert(error);
+          console.log("error@Form.tsx.handleSubmit: ", error);
+        });
+    }
   };
 
   return (
@@ -117,6 +139,7 @@ export default function Form({ collection, pageName, listName, edit }: Props) {
                 placeholder={`Enter ${field}`}
                 style={styles.textField}
                 onChangeText={(text) => HandleInputChange(field, text)}
+                value={formData[field] ? (formData[field] as string) : ""}
               />
             );
           } else if (schema[field].type === "Date") {
