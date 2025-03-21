@@ -65,8 +65,8 @@ export default function PageButton({ pageName, OnPress, OnDelete }: Props) {
               <TouchableOpacity
                 onPress={() =>
                   router.push({
-                    pathname: `/EditPage`,
-                    params: { pageName: pageName },
+                    pathname: `/CreateAndEditPage`,
+                    params: { pageName: pageName, edit: "true" },
                   })
                 }
               >

@@ -16,11 +16,11 @@ export default function RootLayout() {
         options={{ title: "Home", headerLeft: () => null }}
       />
       {/* Create Page screen configuration */}
-      <Stack.Screen name="CreatePage" options={{ title: "Create Page" }} />
+      <Stack.Screen name="CreateAndEditPage" options={{ title: "Page" }} />
       {/* Create List screen configuration */}
-      <Stack.Screen name="CreateList" options={{ title: "Create List" }} />
+      <Stack.Screen name="CreateAndEditList" options={{ title: "List" }} />
       {/* Create Card screen configuration */}
-      <Stack.Screen name="CreateCard" options={{ title: "Create Card" }} />
+      <Stack.Screen name="CreateAndEditCard" options={{ title: "Card" }} />
     </Stack>
   );
 }

@@ -14,12 +14,18 @@ import { Colors } from "../theme/GlobalStyle";
 import { Test } from "../testVariable";
 import { router, useFocusEffect } from "expo-router";
 
-// Interface for form field configuration
+/**
+ * Configuration for form fields, the key is the field name
+ * while the value(type) will store the data type of the input field to be created
+ */
 interface FieldConfig {
   [key: string]: { type: string | number | boolean | Date };
 }
 
-// Interface for form data
+/**
+ * Configuration for data fields, the key is the field name
+ * while the value will store the following data type
+ */
 interface DataConfig {
   [key: string]: string | number | boolean | Date;
 }
@@ -35,10 +41,17 @@ interface Props {
   collection: string;
   pageName?: string;
   listName?: string;
+  cardName?: string;
   edit?: boolean;
 }
 
-export default function Form({ collection, pageName, listName, edit }: Props) {
+export default function Form({
+  collection,
+  pageName,
+  listName,
+  cardName,
+  edit,
+}: Props) {
   const [schema, setSchema] = useState<FieldConfig>({});
   const [formData, setFormData] = useState<DataConfig>({});
   const [datePickerFlag, setDatePickerFlag] = useState(false);
@@ -56,17 +69,44 @@ export default function Form({ collection, pageName, listName, edit }: Props) {
           console.log("Error@Form.tsx.useFocusEffect:", error);
         });
 
-      // Check if user are editing or creating a new data
-      if (edit && pageName != null) {
-        axios
-          .get(`http://${Test.ipConfig}:8080/getPage/${pageName}`)
-          .then((response) => {
-            setFormData(response.data);
-          })
-          .catch((error) => {
-            Alert.alert("Error@Form.tsx.useFocusEffect:", error);
-            console.log("Error@Form.tsx.useFocusEffect:", error);
-          });
+      // Check if user is editing or creating new data
+      if (edit) {
+        if (cardName) {
+          // Fetch card data for editing
+          axios
+            .get(
+              `http://${Test.ipConfig}:8080/getCard/${pageName}/${listName}/${cardName}`
+            )
+            .then((response) => {
+              setFormData(response.data);
+            })
+            .catch((error) => {
+              Alert.alert("Error@Form.tsx.useFocusEffect:", error);
+              console.log("Error@Form.tsx.useFocusEffect:", error);
+            });
+        } else if (listName) {
+          // Fetch list data if editing a list
+          axios
+            .get(`http://${Test.ipConfig}:8080/getList/${pageName}/${listName}`)
+            .then((response) => {
+              setFormData(response.data);
+            })
+            .catch((error) => {
+              Alert.alert("Error@Form.tsx.useFocusEffect:", error);
+              console.log("Error@Form.tsx.useFocusEffect:", error);
+            });
+        } else {
+          // Fetch list data if editing a list
+          axios
+            .get(`http://${Test.ipConfig}:8080/getPage/${pageName}`)
+            .then((response) => {
+              setFormData(response.data);
+            })
+            .catch((error) => {
+              Alert.alert("Error@Form.tsx.useFocusEffect:", error);
+              console.log("Error@Form.tsx.useFocusEffect:", error);
+            });
+        }
       }
 
       // Add page name to form data if provided
@@ -102,20 +142,36 @@ export default function Form({ collection, pageName, listName, edit }: Props) {
 
   // Submit form data to the server
   const HandleSubmit = () => {
-    if (!edit) {
-      axios
-        .post(`http://${Test.ipConfig}:8080/submitData/${collection}`, formData)
-        .then((response) => {
-          Alert.alert(response.data);
-          router.back();
-        })
-        .catch((error) => {
-          Alert.alert(error);
-          console.log("error@Form.tsx.handleSubmit: ", error);
-        });
+    if (edit) {
+      if (cardName) {
+        axios
+          .put(
+            `http://${Test.ipConfig}:8080/editCard/${pageName}/${listName}/${cardName}`,
+            formData
+          )
+          .then((response) => {
+            Alert.alert(response.data);
+            router.back();
+          })
+          .catch((error) => {
+            Alert.alert(error);
+            console.log("error@Form.tsx.handleSubmit: ", error);
+          });
+      } else {
+        axios
+          .put(`http://${Test.ipConfig}:8080/editPage/${pageName}`, formData)
+          .then((response) => {
+            Alert.alert(response.data);
+            router.back();
+          })
+          .catch((error) => {
+            Alert.alert(error);
+            console.log("error@Form.tsx.handleSubmit: ", error);
+          });
+      }
     } else {
       axios
-        .put(`http://${Test.ipConfig}:8080/editPage/${pageName}`, formData)
+        .post(`http://${Test.ipConfig}:8080/submitData/${collection}`, formData)
         .then((response) => {
           Alert.alert(response.data);
           router.back();

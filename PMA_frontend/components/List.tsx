@@ -50,7 +50,7 @@ export default function List({
   // Getting "Cards" from MongoDB server and set the data
   const SettingCards = () => {
     axios
-      .get(`http://${Test.ipConfig}:8080/getCards/${page}`)
+      .get(`http://${Test.ipConfig}:8080/getAllCards/${page}`)
       .then((result) => {
         const data = result.data.map((card: any) => ({
           ...card,
@@ -132,7 +132,20 @@ export default function List({
         (cards, index) =>
           cards.list == list && (
             <View key={index}>
-              <TouchableOpacity onLongPress={ToggleMenuFlag}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/CreateAndEditCard",
+                    params: {
+                      pageName: page,
+                      listName: list,
+                      cardName: cards.name,
+                      edit: "true",
+                    },
+                  })
+                }
+                onLongPress={ToggleMenuFlag}
+              >
                 <View style={styles.cardsContainer}>
                   <Text style={[styles.defaultFont, { fontWeight: "bold" }]}>
                     {cards.name}
@@ -159,9 +172,6 @@ export default function List({
                 <TouchableWithoutFeedback onPress={ToggleMenuFlag}>
                   <View style={styles.overlayBackground}>
                     <View style={styles.overlayMenu}>
-                      <TouchableOpacity onPress={ToggleMenuFlag}>
-                        <Text style={styles.overlayMenuFont}>Edit</Text>
-                      </TouchableOpacity>
                       <TouchableOpacity onPress={() => DeleteCard(cards.name)}>
                         <Text style={styles.overlayMenuFont}>Delete</Text>
                       </TouchableOpacity>
@@ -175,7 +185,7 @@ export default function List({
       <TouchableOpacity
         onPress={() =>
           router.push({
-            pathname: `/CreateCard`,
+            pathname: `/CreateAndEditCard`,
             params: { pageName: page, listName: list },
           })
         }

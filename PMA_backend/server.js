@@ -29,7 +29,7 @@ mongoose
  */
 
 /*GET*/
-// Get all pages
+// Get all "Pages"
 app.get("/getAllPages", async (req, res) => {
   try {
     const data = await Page.find();
@@ -40,7 +40,7 @@ app.get("/getAllPages", async (req, res) => {
   }
 });
 
-// Get certain pages data
+// Get certain "Page"
 app.get("/getPage/:page", async (req, res) => {
   const pageName = req.params.page;
 
@@ -48,13 +48,13 @@ app.get("/getPage/:page", async (req, res) => {
     const data = await Page.findOne({ name: pageName });
     res.status(200).json(data);
   } catch (error) {
-    res.status(500).send(`Error@server.js.getPages: ${error}`);
-    console.log("Error@server.js.getPages: ", error);
+    res.status(500).send(`Error@server.js.getPage: ${error}`);
+    console.log("Error@server.js.getPage: ", error);
   }
 });
 
-// Get all lists for a specific page
-app.get("/getLists/:page", async (req, res) => {
+// Get all "Lists" for a specific "Page"
+app.get("/getAllLists/:page", async (req, res) => {
   const pageName = req.params.page;
 
   try {
@@ -66,8 +66,22 @@ app.get("/getLists/:page", async (req, res) => {
   }
 });
 
-// Get all cards for a specific page
-app.get("/getCards/:page", async (req, res) => {
+// Get certain "List"
+app.get("/getList/:page/:list", async (req, res) => {
+  const { page, list } = req.params;
+
+  try {
+    const data = await List.findOne({ name: list, page: page });
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).send(`Error@server.js.getList: ${error}`);
+    console.log("Error@server.js.getList: ", error);
+  }
+});
+
+// Get all "Cards" for a specific "Page"
+app.get("/getAllCards/:page", async (req, res) => {
   const pageName = req.params.page;
 
   try {
@@ -76,6 +90,24 @@ app.get("/getCards/:page", async (req, res) => {
   } catch (error) {
     res.status(500).send(`Error@server.js.getCards: ${error}`);
     console.log("Error@server.js.getCards: ", error);
+  }
+});
+
+// Get certain "Card"
+app.get("/getCard/:page/:list/:card", async (req, res) => {
+  const { page, list, card } = req.params;
+
+  try {
+    const data = await Card.findOne({
+      name: card,
+      page: page,
+      list: list,
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).send(`Error@server.js.getList: ${error}`);
+    console.log("Error@server.js.getList: ", error);
   }
 });
 
@@ -124,7 +156,7 @@ app.delete("/deletePage/:page", async (req, res) => {
   const page = req.params.page;
   try {
     // Delete the "Page"
-    await Page.deleteOne({ name: page });
+    await Page.findOneAndDelete({ name: page });
 
     // Delete all lists associated with the "Page"
     await List.deleteMany({ page: page });
@@ -189,10 +221,45 @@ app.put("/editPage/:page", async (req, res) => {
 
   try {
     await Page.findOneAndUpdate({ name: page }, updatedData);
+    await List.updateMany({ page: page }, { page: updatedData.name });
+    await Card.updateMany({ page: page }, { page: updatedData.name });
 
     res.status(200).send(`Successfully Edited Page: "${updatedData.name}"`);
   } catch (error) {
     res.status(500).send(`Error@server.js.editPage: ${error}`);
     console.log("Error@server.js.editPage: ", error);
+  }
+});
+
+// Edit a specific "List"
+app.put("/editList/:page/:list", async (req, res) => {
+  const { page, list } = req.params;
+  const updatedData = req.body;
+
+  try {
+    await List.findOneAndUpdate({ name: list, page: page }, updatedData);
+
+    res.status(200).send(`Successfully Edited List: "${updatedData.name}"`);
+  } catch (error) {
+    res.status(500).send(`Error@server.js.editList: ${error}`);
+    console.log("Error@server.js.editList: ", error);
+  }
+});
+
+// Edit a specific "Card"
+app.put("/editCard/:page/:list/:card", async (req, res) => {
+  const { page, list, card } = req.params;
+  const updatedData = req.body;
+
+  try {
+    await Card.findOneAndUpdate(
+      { name: card, page: page, list: list },
+      updatedData
+    );
+
+    res.status(200).send(`Successfully Edited List: "${updatedData.name}"`);
+  } catch (error) {
+    res.status(500).send(`Error@server.js.editList: ${error}`);
+    console.log("Error@server.js.editList: ", error);
   }
 });

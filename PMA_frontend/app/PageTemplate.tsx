@@ -31,7 +31,7 @@ export default function PageTemplate() {
   // Getting "List" from MongoDB server
   const SettingList = () => {
     axios
-      .get(`http://${Test.ipConfig}:8080/getLists/${pageName}`)
+      .get(`http://${Test.ipConfig}:8080/getAllLists/${pageName}`)
       .then((response) => {
         setLists(response.data);
       })
@@ -82,7 +82,7 @@ export default function PageTemplate() {
           icon="add"
           OnPress={() =>
             router.push({
-              pathname: "/CreateList",
+              pathname: "/CreateAndEditList",
               params: { pageName: pageName },
             })
           }

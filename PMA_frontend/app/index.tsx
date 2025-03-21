@@ -62,7 +62,7 @@ export default function index() {
         <CircleButton
           buttonSize={55}
           icon="add"
-          OnPress={() => router.push("/CreatePage")}
+          OnPress={() => router.push("/CreateAndEditPage")}
         />
       </View>
     </View>
