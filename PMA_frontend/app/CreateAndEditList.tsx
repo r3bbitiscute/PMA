@@ -18,6 +18,7 @@ export default function CreateAndEditPage() {
         collection="lists"
         edit={isEditMode}
         pageName={pageName as string}
+        listName={listName as string}
       />
     </View>
   );

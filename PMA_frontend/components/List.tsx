@@ -115,7 +115,18 @@ export default function List({
           {title}
         </Text>
         <View style={styles.listHeaderIcons}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/CreateAndEditList",
+                params: {
+                  pageName: page,
+                  listName: list,
+                  edit: "true",
+                },
+              })
+            }
+          >
             <MaterialIcons
               name="edit"
               size={25}

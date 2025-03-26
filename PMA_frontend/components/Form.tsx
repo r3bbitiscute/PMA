@@ -142,8 +142,10 @@ export default function Form({
 
   // Submit form data to the server
   const HandleSubmit = () => {
+    // Check if user is editing or submitting new data
     if (edit) {
       if (cardName) {
+        // Submit Edit "Card" data
         axios
           .put(
             `http://${Test.ipConfig}:8080/editCard/${pageName}/${listName}/${cardName}`,
@@ -157,7 +159,23 @@ export default function Form({
             Alert.alert(error);
             console.log("error@Form.tsx.handleSubmit: ", error);
           });
+      } else if (listName) {
+        // Submit Edit "List" data
+        axios
+          .put(
+            `http://${Test.ipConfig}:8080/editList/${pageName}/${listName}`,
+            formData
+          )
+          .then((response) => {
+            Alert.alert(response.data);
+            router.back();
+          })
+          .catch((error) => {
+            Alert.alert(error);
+            console.log("error@Form.tsx.handleSubmit: ", error);
+          });
       } else {
+        // Submit Edit "Page" data
         axios
           .put(`http://${Test.ipConfig}:8080/editPage/${pageName}`, formData)
           .then((response) => {
@@ -170,6 +188,7 @@ export default function Form({
           });
       }
     } else {
+      // Submit new data to the server
       axios
         .post(`http://${Test.ipConfig}:8080/submitData/${collection}`, formData)
         .then((response) => {
