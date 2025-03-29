@@ -5,14 +5,18 @@ import {
   TouchableOpacity,
   Alert,
   View,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { useCallback, useState } from "react";
 import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation } from "@react-navigation/native";
+import { router, useFocusEffect } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import { Colors } from "../theme/GlobalStyle";
 import { Test } from "../testVariable";
-import { router, useFocusEffect } from "expo-router";
 
 /**
  * Configuration for form fields, the key is the field name
@@ -55,9 +59,27 @@ export default function Form({
   const [schema, setSchema] = useState<FieldConfig>({});
   const [formData, setFormData] = useState<DataConfig>({});
   const [datePickerFlag, setDatePickerFlag] = useState(false);
+  const [menuFlag, setMenuFlag] = useState(false);
+
+  // To help edit the header
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
+      if (cardName && edit) {
+        navigation.setOptions({
+          headerRight: () => (
+            <TouchableOpacity onPress={() => ToggleMenuFlag()}>
+              <MaterialIcons
+                name="more-horiz"
+                size={25}
+                color={Colors.textPrimary}
+              />
+            </TouchableOpacity>
+          ),
+        });
+      }
+
       // Fetch form configuration from the server
       axios
         .get(`http://${Test.ipConfig}:8080/getFormConfig/${collection}`)
@@ -132,6 +154,11 @@ export default function Form({
     setDatePickerFlag((prevFlag) => !prevFlag);
   };
 
+  // Toggle edit and delete menu visibility
+  const ToggleMenuFlag = () => {
+    setMenuFlag((menuFlag) => !menuFlag);
+  };
+
   // Handle input field changes
   const HandleInputChange = (
     field: string,
@@ -202,6 +229,26 @@ export default function Form({
     }
   };
 
+  // Delete "Card" from the MongoDB server
+  const DeleteCard = () => {
+    axios
+      .delete(
+        `http://${Test.ipConfig}:8080/deleteCard/${pageName}/${listName}/${cardName}`
+      )
+      .then((response) => {
+        Alert.alert(response.data);
+        // Move back to the "List" page
+        router.back();
+      })
+      .catch((error) => {
+        Alert.alert(error);
+        console.error("Error@List.tsx.DeleteCard: ", error);
+      });
+
+    // Closed the menu after deleting the data
+    ToggleMenuFlag();
+  };
+
   return (
     <View style={styles.formContainer}>
       <View style={styles.inputFieldContainer}>
@@ -250,6 +297,22 @@ export default function Form({
       <TouchableOpacity style={styles.submitButton} onPress={HandleSubmit}>
         <Text style={styles.submitButtonLabel}>Submit</Text>
       </TouchableOpacity>
+
+      {/* Overlay Menu */}
+      <Modal transparent visible={menuFlag} animationType="fade">
+        {/* A Button that covers the entire page to increase user experience (let user exit the Modal) */}
+        <TouchableWithoutFeedback onPress={ToggleMenuFlag}>
+          <View style={styles.overlayBackground}>
+            <TouchableOpacity
+              style={styles.overlayMenu}
+              onPress={() => DeleteCard()}
+            >
+              <MaterialIcons name="delete" size={25} color="red" />
+              <Text style={styles.overlayMenuFont}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 }
@@ -295,5 +358,33 @@ const styles = StyleSheet.create({
   submitButtonLabel: {
     color: Colors.textPrimary,
     textAlign: "center",
+  },
+
+  overlayBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+
+  overlayMenu: {
+    flexDirection: "row",
+
+    position: "absolute",
+    top: 57,
+    right: 0,
+    width: 150,
+    backgroundColor: Colors.backgroundSecondary,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+  },
+
+  overlayMenuFont: {
+    color: "red",
+    fontSize: 15,
+    fontWeight: "bold",
+    padding: 10,
   },
 });

@@ -1,12 +1,4 @@
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Alert,
-  Modal,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Alert } from "react-native";
 import axios from "axios";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -40,12 +32,6 @@ export default function List({
   const router = useRouter();
 
   const [cards, setCards] = useState<Cards[]>([]);
-  const [menuFlag, setMenuFlag] = useState(false);
-
-  // Toggle edit and delete menu visibility
-  const ToggleMenuFlag = () => {
-    setMenuFlag((menuFlag) => !menuFlag);
-  };
 
   // Getting "Cards" from MongoDB server and set the data
   const SettingCards = () => {
@@ -77,24 +63,6 @@ export default function List({
         Alert.alert(error);
         console.error("Error@List.tsx.DeleteList: ", error);
       });
-  };
-
-  // Delete "Card" from the MongoDB server
-  const DeleteCard = (card: string) => {
-    axios
-      .delete(`http://${Test.ipConfig}:8080/deleteCard/${page}/${list}/${card}`)
-      .then((response) => {
-        Alert.alert(response.data);
-        // Refresh the "List" data
-        SettingCards();
-      })
-      .catch((error) => {
-        Alert.alert(error);
-        console.error("Error@List.tsx.DeleteCard: ", error);
-      });
-
-    // Closed the menu after deleting the data
-    ToggleMenuFlag();
   };
 
   useFocusEffect(
@@ -155,7 +123,6 @@ export default function List({
                     },
                   })
                 }
-                onLongPress={ToggleMenuFlag}
               >
                 <View style={styles.cardsContainer}>
                   <Text style={[styles.defaultFont, { fontWeight: "bold" }]}>
@@ -176,20 +143,6 @@ export default function List({
                   }
                 </View>
               </TouchableOpacity>
-
-              {/* Overlay Menu */}
-              <Modal transparent visible={menuFlag} animationType="fade">
-                {/* A Button that covers the entire page to increase user experience (let user exit the Modal) */}
-                <TouchableWithoutFeedback onPress={ToggleMenuFlag}>
-                  <View style={styles.overlayBackground}>
-                    <View style={styles.overlayMenu}>
-                      <TouchableOpacity onPress={() => DeleteCard(cards.name)}>
-                        <Text style={styles.overlayMenuFont}>Delete</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </TouchableWithoutFeedback>
-              </Modal>
             </View>
           )
       )}
@@ -231,27 +184,6 @@ const styles = StyleSheet.create({
   defaultFont: {
     color: Colors.textPrimary,
     fontSize: 15,
-    padding: 10,
-  },
-
-  overlayBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-
-  overlayMenu: {
-    width: 150,
-    backgroundColor: Colors.accent,
-    borderRadius: 5,
-    padding: 10,
-  },
-
-  overlayMenuFont: {
-    color: Colors.textPrimary,
-    fontSize: 15,
-    fontWeight: "bold",
     padding: 10,
   },
 });
